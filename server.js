@@ -8,7 +8,7 @@ let app = express();
 let server = require('http').createServer(app);
 
 let io = require('socket.io')(server);
-
+var table = [[],[],[],[],[],[],[],[]];
 let waitingPlayer;
 
 io.on('connection', onConnection );
@@ -17,9 +17,9 @@ app.use(express.static(__dirname + '/client'));
 server.listen(8080, () => console.log('reday to work'));
 
 function onConnection(sock){
-	
 	if(waitingPlayer){
-		startGame();
+		console.log(sock + " , " + waitingPlayer);
+		startGame(sock,waitingPlayer);
 		waitingPlayer = null;	
 	}
 	else{
@@ -27,10 +27,9 @@ function onConnection(sock){
 	}
 }
 
-function startGame(){
-	var table = [[],[],[],[],[],[],[],[]]; //array for table 8x8
+function startGame(sock1, sock2){
+	console.log("startGame");
 	var turn = 'black'; //black plays first
-
 	for(var i = 0; i<8; i++) //setting up starting position
 		for(var j = 0; j<8; j++)
 			table[i][j]='blank';
@@ -38,8 +37,8 @@ function startGame(){
 	table[4][4]='white';
 	table[3][4]='black';
 	table[4][3]='black';
-	
-	sock.broadcast.emit('draw', {array: table});
-
+	console.log(table);
+	sock1.broadcast.emit('draw', {array: table});
+	sock2.broadcast.emit('draw', {array: table});
 }
 
